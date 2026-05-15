@@ -1,0 +1,140 @@
+public class ProductController {
+
+    public Product__c product {get; set;}
+    public List<Product__c> productList {get; set;}
+    public Boolean isEdit {get; set;}
+    public String selectedSerialNo {get; set;}
+
+    public ProductController(){
+        product = new Product__c();
+        productList = getProducts();
+        isEdit = false;
+    }
+
+    public List<Product__c> getProducts(){
+        return [SELECT Id, Name, Serial_No__c, Manufacture_Date__c, Expiry_Date__c 
+                FROM Product__c];
+    }
+
+    public void saveProduct(){
+
+        // Serial Number validation
+        if(product.Serial_No__c == null || product.Serial_No__c.trim() == ''){
+            ApexPages.addMessage(new ApexPages.Message(
+                ApexPages.Severity.ERROR,
+                'Serial Number cannot be empty'
+            ));
+            return;
+        }
+
+        // Date validation
+        if(product.Manufacture_Date__c != null && product.Expiry_Date__c != null){
+            if(product.Expiry_Date__c <= product.Manufacture_Date__c){
+                ApexPages.addMessage(new ApexPages.Message(
+                    ApexPages.Severity.ERROR,
+                    'Expiry Date must be after Manufacture Date'
+                ));
+                return;
+            }
+        }
+
+        try{
+            if(isEdit){
+                update product;
+            } else {
+                insert product;
+            }
+
+            ApexPages.addMessage(new ApexPages.Message(
+                ApexPages.Severity.CONFIRM,
+                isEdit ? 'Product updated successfully' : 'Product added successfully'
+            ));
+
+            product = new Product__c();
+            isEdit = false;
+            productList = getProducts();
+
+        } catch(DmlException e){
+            ApexPages.addMessage(new ApexPages.Message(
+                ApexPages.Severity.ERROR,
+                'Duplicate Serial Number not allowed'
+            ));
+        }
+    }
+
+    public void editProduct(){
+        product = [SELECT Id, Name, Serial_No__c, Manufacture_Date__c, Expiry_Date__c 
+                   FROM Product__c 
+                   WHERE Serial_No__c = :selectedSerialNo LIMIT 1];
+        isEdit = true;
+    }
+
+    public void deleteProduct(){
+        Product__c p = [SELECT Id FROM Product__c 
+                        WHERE Serial_No__c = :selectedSerialNo LIMIT 1];
+        delete p;
+        productList = getProducts();
+    }
+}
+
+
+
+
+<apex:page controller="ProductController">
+    <apex:form >
+
+        <h2>Product Inventory Management</h2>
+
+        <apex:outputPanel id="msgPanel">
+            <apex:pageMessages />
+        </apex:outputPanel>
+
+        <!-- Add Product -->
+        <apex:pageBlock title="Add Product" id="formBlock">
+            <apex:pageBlockSection columns="1">
+                <apex:inputText value="{!product.Name}" label="Product Name"/>
+                <apex:inputText value="{!product.Serial_No__c}" label="Serial No"/>
+               	<apex:inputField value="{!product.Manufacture_Date__c}" label="Manufacture Date"/>
+				<apex:inputField value="{!product.Expiry_Date__c}" label="Expiry Date"/>
+			</apex:pageBlockSection>
+            <apex:commandButton value="Save"
+                action="{!saveProduct}"
+                rerender="msgPanel,formBlock,table"/>
+        </apex:pageBlock>
+
+        <!-- Product List -->
+        <apex:pageBlock title="Product List">
+            <apex:pageBlockTable value="{!productList}" var="p" id="table">
+
+                <apex:column value="{!p.Name}"/>
+                <apex:column value="{!p.Serial_No__c}"/>
+                <apex:column value="{!p.Manufacture_Date__c}"/>
+                <apex:column value="{!p.Expiry_Date__c}"/>
+
+                <!-- Edit -->
+                <apex:column headerValue="Edit">
+                    <apex:commandButton value="Edit"
+                        action="{!editProduct}"
+                        rerender="formBlock,table">
+                        <apex:param name="serial"
+                            value="{!p.Serial_No__c}"
+                            assignTo="{!selectedSerialNo}"/>
+                    </apex:commandButton>
+                </apex:column>
+
+                <!-- Delete -->
+                <apex:column headerValue="Delete">
+                    <apex:commandButton value="Delete"
+                        action="{!deleteProduct}"
+                        rerender="table">
+                        <apex:param name="serial"
+                            value="{!p.Serial_No__c}"
+                            assignTo="{!selectedSerialNo}"/>
+                    </apex:commandButton>
+                </apex:column>
+
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+
+    </apex:form>
+</apex:page>

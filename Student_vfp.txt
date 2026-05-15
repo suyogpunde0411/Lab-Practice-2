@@ -1,0 +1,113 @@
+public class StController {
+    public St__c student {get; set;}
+    public List<St__c> studentList {get;set;}
+    public Boolean isEdit{get;set;}
+    public Decimal selectedRollNo{get;set;}
+    
+    public StController(){
+        student = new St__c();
+        studentList = getStudents();
+        isEdit=false;
+    }
+    
+    public List<St__c> getStudents(){
+        return [SELECT Id , Name,Roll_no__c,Class__c,Number__c from St__c];
+    }
+    
+    public void saveStudent(){
+    
+    // Mobile validation
+    if(student.Number__c != null && String.valueOf((student.Number__c)).length() != 10){
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
+            'Mobile number must be 10 digits'));
+        return;
+    }
+    
+    // Roll number validatio
+    if(student.Roll_no__c != null && student.Roll_no__c <= 0){
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
+            'Roll number must be greater than 0'));
+        return;
+    }
+
+    try{
+        if(isEdit){
+            update student;
+        } else {
+            insert student;
+        }
+
+        ApexPages.addMessage(new ApexPages.Message(
+            ApexPages.Severity.CONFIRM,
+            isEdit ? 'Record updated successfully' : 'Record saved successfully'
+        ));
+
+        student = new St__c();
+        isEdit = false;
+        studentList = getStudents();
+
+    } catch(DmlException e){
+        ApexPages.addMessage(new ApexPages.Message(
+            ApexPages.Severity.ERROR,
+            'Duplicate Roll Number not allowed'
+        ));
+    }
+}
+    
+    public void editStudent(){
+        student = [SELECT Id , Name,Roll_no__c,Class__c ,Number__c from St__c where Roll_no__c=:selectedRollNo LIMIT 1];
+        isEdit=true;
+    }
+    
+    public void deleteStudent(){
+        St__c s=[SELECT Id from St__c where Roll_no__c =:selectedRollNo LIMIT 1];
+        delete s;
+        studentList = getStudents();
+    }
+}
+
+
+*****Stpage.vfp*****
+
+<apex:page controller="StController">
+    <apex:form >
+    	<h2>Student Record Management</h2>
+        <apex:outputPanel id="msgPanel">
+         <apex:pageMessages />
+        </apex:outputPanel>
+	 <apex:pageBlock title="Add Student" id="formBlock">
+            <apex:pageBlockSection columns="1">
+                <apex:inputText value="{!student.Name}" label="Name"/>
+                <apex:inputText value="{!student.Roll_no__c}" label="Roll No"/>
+                <apex:inputText value="{!student.Class__c}" label="Class"/>
+                <apex:inputText value="{!student.Number__c}" label="Mobile No"/>
+            </apex:pageBlockSection>
+         
+         <apex:commandButton value="Save" action="{!saveStudent}" rerender="msgPanel,formBlock,table"/>	
+      
+     </apex:pageBlock> 
+        
+     <apex:pageBlock title="Student List">
+            <apex:pageBlockTable value="{!studentList}" var="s" id="table">
+                <apex:column value="{!s.Name}"/>
+                <apex:column value="{!s.Roll_no__c}"/>
+                <apex:column value="{!s.Class__c}"/>
+                <apex:column value="{!s.Number__c}"/>
+         
+         <apex:column headerValue="Edit">       
+         <apex:commandButton value="Edit" action="{!editStudent}" rerender="formBlock,table">
+         <apex:param name="roll" value="{!s.Roll_no__c}" assignTo="{!selectedRollNo}"/>
+         </apex:commandButton>    
+         </apex:column>
+          
+         <apex:column headerValue="Delete">       
+         <apex:commandButton value="Delete" action="{!deleteStudent}" rerender="table">
+         <apex:param name="roll" value="{!s.Roll_no__c}" assignTo="{!selectedRollNo}"/>
+         </apex:commandButton>  
+         </apex:column>
+             
+        </apex:pageBlockTable>
+        </apex:pageBlock>
+        
+    </apex:form>
+</apex:page>

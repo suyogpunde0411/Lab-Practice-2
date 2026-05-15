@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Chatbot </title>
+    <style>
+        body{
+        font-family:Arial;
+        margin:0;
+        background:#f2f2f2;
+        }
+
+        header,footer{
+        background:orange;
+        color:white;
+        text-align:center;
+        padding:15px;
+        }
+
+        section{
+            padding:25px;
+            background:white;
+            margin:15px;
+        }
+
+        #chatBox{
+            position:fixed;
+            right: 20px;
+            bottom:70px;
+            width:380px;
+            background-color: white;
+            border: 1px solid black;
+        }
+
+        #messages{
+            height:200px;
+            overflow:auto;
+            padding:10px
+        }
+        nav{
+        background:#333;
+        text-align:center;
+        padding:10px;
+        }
+
+        nav a{
+        color:white;
+        margin:10px;
+        text-decoration:none;
+        }
+
+        .card{
+            padding: 25px;
+            margin: 10px;
+            border: 1px solid #333;
+        }
+        .bot{
+            background:#ddd;
+            margin:5px;
+            padding:6px;
+        }
+        .user{
+            background:#ba901c;
+            margin:5px;
+            padding:6px;
+            text-align: right;
+        }
+        #chatBtn{
+            position:fixed;
+            right:20px;
+            bottom:20px;
+            padding: 15px;
+            background:orange;
+            color: aliceblue;
+            border: 2px solid white ;
+            
+        }
+    </style>    
+<head>        
+    <body>
+     <header> 
+        <h1>Foodie Restaurant</h1>
+        <p>Delicious Food for Everyone</p>
+     </header>   
+     <nav>
+        <a href="#home">Home</a>
+        <a href="#menu">Menu</a>
+        <a href="#about">About Us</a>
+        <a href="#contact">Contact</a>
+     </nav>
+     <section id="home">
+        <h2>Welcome to Foodie restaurant</h2>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. A dolore quia recusandae? Voluptatum a quos iusto doloribus tempora recusandae magni illum deleniti pariatur tenetur sunt perferendis accusantium sequi porro unde, similique exercitationem labore provident saepe facilis nobis! Rerum omnis officia maxime iure nostrum consequuntur veniam, eos debitis sit libero quis.</p>
+     </section>
+     <section id="menu">
+      <h2>Menu </h2>
+      <div class="card">
+        <h3>Pizza</h3>
+        <p>Price: ₹250</p>
+      </div> 
+      
+    <div class="card">
+    <h3>Burger</h3>
+    <p>Price: ₹180</p>
+    </div>
+
+    <div class="card">
+    <h3>Pasta</h3>
+    <p>Price: ₹220</p>
+    </div>
+    </section>
+
+    <section id="about">
+        <h2>ABOUT Us</h2>
+        <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem ut vel quidem, nobis rerum quasi corrupti modi doloremque magni vero consequuntur, ab assumenda laudantium deleniti id fugiat dolores iusto quo a soluta! Voluptatibus suscipit nostrum, vitae amet culpa aut excepturi cupiditate hic! Aut, recusandae sed. Aut enim minus, velit mollitia quo animi quas placeat fuga optio laudantium iste deleniti reiciendis unde consectetur earum! Aspernatur culpa atque ad sapiente, sunt dolores quis commodi itaque sint libero accusamus ut omnis quaerat rerum laudantium dicta debitis quisquam nesciunt, molestias quod deleniti! Quibusdam aliquid, magnam dolore distinctio amet consequuntur temporibus nesciunt iusto optio ab!</p>
+    </section>
+
+    <section id="contact">
+    <h2>Contact Us</h2>
+    <p>Address: FC Road, Pune</p>
+    <p>Phone: 9876543210</p>
+    <p>Timing: 10 AM to 11 PM</p>
+    </section>
+
+    <footer>
+        <p>Copyright: 2026 Foodie Restaurant</p>
+    </footer>
+
+
+    <!-- important -->
+    <button id="chatBtn" onClick="toggleChat()">Chat</button>
+    
+    <div id="chatBox" >
+       <h3 style="background: orange;color:azure;margin:0;padding:10px;text-align: center;">Chatbot</h3> 
+    
+
+    <div id="messages">
+        <div class="bot"> Hello ! Ask me about menu, address, timing or booking.</div>
+    </div>
+    <input id="input" placeholder="Type message ..." style="width:75%; padding: 8px;">
+      <button onclick="send()">Send</button>  
+    </div>
+    <!-- itthh prynt -->
+
+    <script>
+        function toggleChat(){
+            let box =document.getElementById("chatBox");
+            box.style.display = box.style.display=="block"?"none":"block";
+        }
+
+        function send(){
+            let input = document.getElementById("input");
+            let msg = input.value.toLowerCase();
+            let messages =document.getElementById("messages")
+
+             if(msg.includes("hello") || msg.includes("hi"))
+                reply="Hello! Welcome to Foodie Restaurant.";
+             else if(msg.includes("menu")){
+             reply="We have Pizza, Burger,Pasta.";
+             window.location.href='#menu';}
+             else if(msg.includes("time") || msg.includes("open"))
+                reply="We are open from 10 AM to 11 PM.";
+            else if(msg.includes("address") || msg.includes("location"))
+                reply="We are located at FC Road, Pune.";
+            else if(msg.includes("contact") || msg.includes("phone"))
+                reply="Call us on 9876543210.";
+            else if(msg.includes("book") || msg.includes("table"))
+                reply="Your table has been booked successfully.";
+            else if(msg.includes("home")){
+                        window.location.href = "#home";
+                        reply = "Redirecting to Home section.";
+                    }
+            // About Navigation
+            else if(msg.includes("about")){
+                window.location.href = "#about";
+                reply = "Redirecting to About section.";
+            }
+            else{
+                reply=" Sorry!! I dont understand";
+            }
+       
+
+            messages.innerHTML+="<div class='user'>"+msg+"</div>"
+            messages.innerHTML+="<div class='bot'>"+reply+"</div>"
+            input.value="";
+        }
+    </script>
+    </body>
+</html>

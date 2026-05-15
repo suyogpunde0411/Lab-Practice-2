@@ -1,0 +1,86 @@
+public class EmployeeManagement {
+    public static void addEmployee(Integer Id, String name,String email,Date dob,String dept){
+        try{
+            Emp__c emp = new Emp__c(
+                Emp_Id__c =Id,
+                Name=name,
+                Emp_Email__c=email,
+                Birth_Date__c=dob,
+                Department__c=dept        
+            );
+            insert emp;
+            System.debug('Employee Added Successfully');
+        }
+        catch(DmlException e){
+            System.debug('Error(Duplicate or Invalid Data)'+ e.getMessage());
+        }
+    }
+    
+    public static void viewEmployees(){
+        List<Emp__c> empList=[
+          select Emp_Id__c, Name,Emp_Email__c,Birth_Date__c,Department__c
+            from Emp__c
+        ];
+        
+        if(empList.isEmpty()){
+            System.debug('No Employee Found');
+        }
+        
+        for(Emp__c e : empList){
+            System.debug(
+            'ID: '+ e.Emp_Id__c+
+            ' | Name: ' + e.Name+
+            ' | Email: '+e.Emp_Email__c+
+            ' | DOB: '+e.Birth_Date__c+
+            ' | Dept: '+e.Department__c    
+            );
+        }
+    } 
+        public static void updateEmployee(Integer Id,String name, String email, Date dob,String dept){
+            try{
+              	List<Emp__c> empList = [
+                    select Id,Emp_Id__c,Name,Emp_Email__c, Birth_Date__c,Department__c
+                    from Emp__c
+                    where Emp_Id__c=:Id
+                    limit 1
+                ];  
+                
+                if(empList.isEmpty()){
+                    System.debug('Employee not found.');
+                    return;
+                }
+                
+                Emp__c emp = empList[0];
+                emp.Name =name;
+                emp.Emp_Email__c = email;
+                emp.Birth_Date__c=dob;
+                emp.Department__c=dept;
+                update emp;
+                System.debug('Employee updated successfully.');
+            }
+            catch(DmlException e){
+              System.debug('Error while updating employees: '+ e.getMessage());  
+            }
+        }
+    public static void deleteEmployee(Integer Id){
+            try{
+              	List<Emp__c> empList = [
+                    select Id,Emp_Id__c,Name,Emp_Email__c, Birth_Date__c,Department__c
+                    from Emp__c
+                    where Emp_Id__c=:Id
+                    limit 1
+                ];  
+                
+                if(empList.isEmpty()){
+                    System.debug('Employee not found.');
+                    return;
+                }
+                
+                delete empList[0];
+                System.debug('Employee deleted successfully.');
+            }
+            catch(DmlException e){
+              System.debug('Error while deleting employees: '+ e.getMessage());  
+            }
+        }
+}

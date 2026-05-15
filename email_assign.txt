@@ -1,0 +1,72 @@
+public class Email_assign {
+    
+    public static boolean isValidEmail(String email){
+        String emailRegex = '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$';
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+    
+    public static void sendEmail(String recipientEmail){
+        try{
+            if(!isValidEmail(recipientEmail)){
+                System.debug('Invalid Email ID.');
+                return;
+            }
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setToAddresses(
+                new String[] {recipientEmail}
+            );
+            
+            mail.setSubject('Important email...');
+            
+            mail.setPlainTextBody(
+                'Hello \n this is message from Suyog Punde using Salesforces.'
+            );
+            
+            Messaging.sendEmail(
+                new Messaging.SingleEmailMessage[]{mail});
+            
+            System.debug('Email sent successfully..');
+        }
+        catch(Exception e ){
+            System.debug('Error: '+e.getMessage());
+        }
+    }
+    
+    public static void sendEmailwithAttachment(String recipientEmail){
+        try{
+            if(!isValidEmail(recipientEmail)){
+                System.debug('Invalid Email ID.');
+                return;
+            }
+            
+            ContentVersion cv = [
+                select Title, VersionData, FileExtension
+                from ContentVersion 
+                where Title='Workout'
+                limit 1
+            ];
+            
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            
+            mail.setToAddresses( new String[]{
+                recipientEmail
+                    } );
+            
+            mail.setSubject('Import email with Attachment.');
+            
+            mail.setPlainTextBody('Hi there');
+            
+            Messaging.EmailFileAttachment attachment = new Messaging.EmailFileAttachment();
+            attachment.setFileName(cv.Title+'.'+cv.FileExtension);
+			attachment.setBody(cv.VersionData);
+            mail.setFileAttachments( new Messaging.EmailFileAttachment[]{attachment});
+            Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
+            System.debug('Email Sent Successfully');
+        }
+        catch(Exception e ){
+            System.debug('Error: '+e.getMessage());
+        }
+    }
+}

@@ -25,7 +25,7 @@ public class NQueensBB {
             cols[col]=true;
             leftDiag[row-col+N-1]=true;
             rightDiag[row+col]=true;
-
+ 
             solve(board, row + 1);
         
             board[row][col]=0;

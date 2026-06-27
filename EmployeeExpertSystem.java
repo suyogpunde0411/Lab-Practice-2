@@ -86,14 +86,14 @@ public class EmployeeExpertSystem {
         }
 
         private static void evaluateEmployee(Employee emp) {
-                System.out.println("\n======================================");
+                System.out.println("\n=======================================");
                 System.out.println("      PERFORMANCE EVALUATION");
-                System.out.println("======================================");
+                System.out.println("=======================================");
 
                 String rating;
                 String reason;
                 String suggestion;
-
+ 
                 
         if (emp.attendance >= 90
                 && emp.quality >= 9

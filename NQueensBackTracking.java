@@ -7,7 +7,7 @@ public class NQueensBackTracking {
     }
  
     private void solve(int[][] board, int row) {
-       if(row==N){
+       if(row==N) {
         printBoard(board);
         System.out.println();
         return;

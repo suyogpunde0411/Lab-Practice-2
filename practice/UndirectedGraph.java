@@ -5,7 +5,7 @@ import java.util.Queue;
 public class UndirectedGraph {
 
     private int V;
-    private ArrayList<ArrayList<Integer>> adj;
+    private ArrayList<ArrayList<Integer>>  adj;
 
     UndirectedGraph(int V){
         this.V =V;
